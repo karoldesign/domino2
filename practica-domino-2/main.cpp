@@ -191,16 +191,32 @@ void disorderPool(tArray pool1, tArray pool2) {
     int idx;
     short int tmp1, tmp2;
         for (int i = numToken - 1; i >= 0; i--) {
-        idx = rand() % (i + 1);
-        if (i != idx) {
-        tmp1 = pool1[i];
-        tmp2 = pool2[i];
-        pool1[i] = pool1[idx];
-        pool2[i] = pool2[idx];
-        pool1[idx] = tmp1;
-        pool2[idx] = tmp2;
+            idx = rand() % (i + 1);
+            if (i != idx) {
+            tmp1 = pool1[i];
+            tmp2 = pool2[i];
+            pool1[i] = pool1[idx];
+            pool2[i] = pool2[idx];
+            pool1[idx] = tmp1;
+            pool2[idx] = tmp2;
         }
     }
+}
+
+bool canDrawToken(string board, tArray tokenN1, tArray tokenN2, int numPlayerToken) {
+    bool canPutLeftBool = true;
+    bool canPutRightBool = true;
+    bool boolToken = (canPutLeftBool && canPutRightBool);
+
+    for (int i = 0; i <= numPlayerToken; i++) {
+        canPutLeftBool = canPutLeft(board, tokenN1[i], tokenN2[i]) && canPutLeft(board, tokenN2[i], tokenN1[i]);
+        canPutRightBool = canPutRight(board, tokenN1[i], tokenN2[i]) && canPutRight(board, tokenN2[i], tokenN1[i]);
+
+        if (!boolToken) {
+            return boolToken;
+        }
+    }
+    return !boolToken;
 }
 
 int main(int argc, const char * argv[]) {
@@ -307,9 +323,13 @@ int main(int argc, const char * argv[]) {
                 }
                 break;
             case 3:
-                numPlayerToken++;
-                drawTokens(pool1, pool2, numPoolToken, tokenN1[numPlayerToken], tokenN2[numPlayerToken]);
-                stolen++;
+                if (canDrawToken(board, tokenN1, tokenN2, numPlayerToken)) {
+                    numPlayerToken = numPlayerToken + 1;
+                    drawTokens(pool1, pool2, numPoolToken, tokenN1[numPlayerToken], tokenN2[numPlayerToken]);
+                    stolen++;
+                } else {
+                    cout << ">> Tienes fichas que puedes utilizar! :-) <<" << endl;
+                }
                 break;
         }
     }
