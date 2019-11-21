@@ -207,9 +207,9 @@ void disorderPool(tArray pool1, tArray pool2) {
 }
 
 string convertArrayToString(tArray xs) {
-    string returnstring = '';
+    string returnstring;
     for (int temp = 0; temp < numToken; temp++)
-        returnstring += itoa(xs[temp]);
+        returnstring += toStr(xs[temp]);
     return returnstring;
 }
 
