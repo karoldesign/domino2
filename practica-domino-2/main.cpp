@@ -207,21 +207,19 @@ void disorderPool(tArray pool1, tArray pool2) {
 }
 
 string convertArrayToString(tArray xs) {
-    string ss;
-
-    for (int i = 0; i < numToken; ++i) {
-        ss = ss + ' ' + to_string(xs[i]);
-    }
-    return ss;
+    string returnstring = '';
+    for (int temp = 0; temp < numToken; temp++)
+        returnstring += itoa(xs[temp]);
+    return returnstring;
 }
 
- int convertStringToArray(tArray xs) {
-    string ss;
-
-    for (int i = 0; i < numToken; ++i) {
-        ss = ss + ' ' + to_string(xs[i]);
+ int convertStringToArray(string el) {
+    int* numbers = new int[el.length()];
+    for (int i = 0; i < el.length(); ++i) {
+        currentChar = el.at(i);
+        numbers[i]= (int)currentChar-'0';
     }
-    return ss;
+    return numbers;
 }
 
 void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
