@@ -16,6 +16,9 @@ using namespace std;
 const int numToken = 28;
 typedef short int tArray[numToken];
 
+ifstream archivo;
+ofstream file;
+
 string toStr(int n) {
     switch (n) {
         case 0:
@@ -203,6 +206,62 @@ void disorderPool(tArray pool1, tArray pool2) {
     }
 }
 
+string convertArrayToString(tArray xs) {
+    string ss;
+
+    for (int i = 0; i < numToken; ++i) {
+        ss = ss + ' ' + to_string(xs[i]);
+    }
+    return ss;
+}
+
+ int convertStringToArray(tArray xs) {
+    string ss;
+
+    for (int i = 0; i < numToken; ++i) {
+        ss = ss + ' ' + to_string(xs[i]);
+    }
+    return ss;
+}
+
+void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
+    archivo.open("domino_save.txt", ios::in);
+    
+    archivo >> board;
+    archivo >> convertStringToArray(pool1);
+    archivo >> convertStringToArray(pool2);
+    archivo >> convertStringToArray(tokenN1);
+    archivo >> convertStringToArray(tokenN2);
+    archivo >> counter;
+    archivo >> stolen;
+    archivo >> max;
+    archivo >> numPlayerToken;
+    archivo >> numPoolToken;
+    archivo.close();
+}
+
+void saveCollectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
+    file.open("domino_save.txt", ios::out);
+    if (file.is_open()) {
+    file << board << '\n'
+        << convertArrayToString(pool1) << '\n'
+        << convertArrayToString(pool2) << '\n'
+        << convertArrayToString(tokenN1) << '\n'
+        << convertArrayToString(tokenN2) << '\n'
+        << counter << '\n'
+        << stolen << '\n'
+        << max << '\n';
+        << numPlayerToken << '\n';
+        << numPoolToken << '\n';
+
+        file.close();
+
+    } else {
+        cout << "¡No se ha podido abrir el archivo!" << endl;
+    }
+}
+
+
 bool canDrawToken(string board, tArray tokenN1, tArray tokenN2, int numPlayerToken) {
     bool canPutLeftBool = true;
     bool canPutRightBool = true;
@@ -233,11 +292,12 @@ int main(int argc, const char * argv[]) {
     
     
     srand(time(NULL));
+
     
     if (openFile()) {
-        ifstream archivo;
-        archivo.open("domino_save.txt", ios::in);
-        if (!archivo.is_open()) {
+        if (archivo.is_open()) {
+                collectData(pool1, pool2, max, numPlayerToken, board, tokenN1, tokenN2, numPoolToken, counter, stolen);
+        } else {
             cout << "¡No se ha podido abrir el archivo!" << endl;
             
             max = chooseMax();
@@ -255,19 +315,6 @@ int main(int argc, const char * argv[]) {
 
             board = tokenToStr(pool1[numPoolToken-1],pool2[numPoolToken-1]);
             numPoolToken--;
-            
-        } else {
-            archivo >> board;
-            // archivo >> pool1;
-            // archivo >> pool2;
-            // // archivo >> tokenN1;
-            // // archivo >> tokenN2;
-            archivo >> counter;
-            archivo >> stolen;
-            archivo >> max;
-            archivo >> numPlayerToken;
-            archivo >> numPoolToken;
-            archivo.close();
         }
     } else {
         
@@ -335,20 +382,7 @@ int main(int argc, const char * argv[]) {
     }
     
     if (chooseSave()) {
-        ofstream archivo;
-        archivo.open("domino_save.txt", ios::out);
-        if (!archivo.is_open()) {
-            cout << "¡No se ha podido abrir el archivo!" << endl;
-        } else {
-            archivo << board << '\n'
-            << tokenN1 << '\n'
-            << tokenN2 << '\n'
-            << counter << '\n'
-            << stolen << '\n'
-            << max << '\n';
-            
-            archivo.close();
-        }
+        saveCollectData();
     }
     return 0;
 }
