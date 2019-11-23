@@ -213,11 +213,10 @@ string convertArrayToString(tArray xs) {
     return returnstring;
 }
 
- int convertStringToArray(string el, int num) {
-    int* numbers = new int[num];
+ tArray convertStringToArray(string el, int num) {
+    tArray numbers;
     for (int i = 0; i < num; ++i) {
-        currentChar = el.at(i);
-        numbers[i]= (int)currentChar-'0';
+        numbers[i]= (short)el.at(i)-'0';
     }
     return numbers;
 }
