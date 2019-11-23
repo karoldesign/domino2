@@ -213,9 +213,9 @@ string convertArrayToString(tArray xs) {
     return returnstring;
 }
 
- int convertStringToArray(string el) {
-    int* numbers = new int[el.length()];
-    for (int i = 0; i < el.length(); ++i) {
+ int convertStringToArray(string el, int num) {
+    int* numbers = new int[num];
+    for (int i = 0; i < num; ++i) {
         currentChar = el.at(i);
         numbers[i]= (int)currentChar-'0';
     }
@@ -226,15 +226,15 @@ void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, 
     archivo.open("domino_save.txt", ios::in);
     
     archivo >> board;
-    archivo >> convertStringToArray(pool1);
-    archivo >> convertStringToArray(pool2);
-    archivo >> convertStringToArray(tokenN1);
-    archivo >> convertStringToArray(tokenN2);
+    archivo >> numPlayerToken;
+    archivo >> numPoolToken;
+    archivo >> convertStringToArray(pool1, numPoolToken);
+    archivo >> convertStringToArray(pool2, numPoolToken);
+    archivo >> convertStringToArray(tokenN1, numPlayerToken);
+    archivo >> convertStringToArray(tokenN2, numPlayerToken);
     archivo >> counter;
     archivo >> stolen;
     archivo >> max;
-    archivo >> numPlayerToken;
-    archivo >> numPoolToken;
     archivo.close();
 }
 
@@ -242,6 +242,8 @@ void saveCollectData(tArray pool1, tArray pool2, int max, short int numPlayerTok
     file.open("domino_save.txt", ios::out);
     if (file.is_open()) {
     file << board << '\n'
+        << numPlayerToken << '\n';
+        << numPoolToken << '\n';
         << convertArrayToString(pool1) << '\n'
         << convertArrayToString(pool2) << '\n'
         << convertArrayToString(tokenN1) << '\n'
@@ -249,8 +251,6 @@ void saveCollectData(tArray pool1, tArray pool2, int max, short int numPlayerTok
         << counter << '\n'
         << stolen << '\n'
         << max << '\n';
-        << numPlayerToken << '\n';
-        << numPoolToken << '\n';
 
         file.close();
 
