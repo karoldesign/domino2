@@ -223,17 +223,26 @@ string convertArrayToString(tArray xs) {
 
 void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
     archivo.open("domino_save.txt", ios::in);
-    
+    string _numPoolToken, _numPlayerToken, _pool1, _pool2, _tokenN1, _tokenN2;
+
     archivo >> board;
-    archivo >> numPlayerToken;
-    archivo >> numPoolToken;
-    archivo >> convertStringToArray(pool1, numPoolToken);
-    archivo >> convertStringToArray(pool2, numPoolToken);
-    archivo >> convertStringToArray(tokenN1, numPlayerToken);
-    archivo >> convertStringToArray(tokenN2, numPlayerToken);
+    archivo >> _numPlayerToken;
+    archivo >> _numPoolToken;
+    archivo >> _pool1;
+    archivo >> _pool2;
+    archivo >> _tokenN1;
+    archivo >> _tokenN2;
     archivo >> counter;
     archivo >> stolen;
     archivo >> max;
+
+    numPlayerToken = stoi(_numPlayerToken);
+    numPoolToken = stoi(_numPoolToken);
+    pool1 = convertStringToArray(_pool1, numPoolToken);
+    pool2 = convertStringToArray(_pool2, numPoolToken);
+    tokenN1 = convertStringToArray(_tokenN1, numPoolToken);
+    tokenN2 = convertStringToArray(_tokenN2, numPoolToken);
+
     archivo.close();
 }
 
