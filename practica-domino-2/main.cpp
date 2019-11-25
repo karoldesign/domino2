@@ -219,7 +219,7 @@ string convertArrayToString(tArray xs) {
     tArray numbers;
     for (int i = 0; i < num; ++i) {
         short int number = (short int)strtoul(el.at(i), NULL, 0);
-        numbers[i] = number;
+        numbers[i] = (short int)strtoul(el.at(i), NULL, 0);
     }
     return numbers;
 }
@@ -253,8 +253,8 @@ void saveCollectData(tArray pool1, tArray pool2, int max, short int numPlayerTok
     file.open("domino_save.txt", ios::out);
     if (file.is_open()) {
     file << board << '\n'
-        << numPlayerToken << '\n';
-        << numPoolToken << '\n';
+        << numPlayerToken << '\n'
+        << numPoolToken << '\n'
         << convertArrayToString(pool1) << '\n'
         << convertArrayToString(pool2) << '\n'
         << convertArrayToString(tokenN1) << '\n'
@@ -391,7 +391,7 @@ int main(int argc, const char * argv[]) {
     }
     
     if (chooseSave()) {
-        saveCollectData();
+        saveCollectData(pool1, pool2, max, numPlayerToken, board, tokenN1, tokenN2, numPoolToken, counter, stolen);
     }
     return 0;
 }
