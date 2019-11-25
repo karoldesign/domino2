@@ -11,6 +11,8 @@
 #include <list>
 #include <iostream>
 #include <fstream>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 const int numToken = 28;
@@ -216,7 +218,8 @@ string convertArrayToString(tArray xs) {
  tArray convertStringToArray(string el, int num) {
     tArray numbers;
     for (int i = 0; i < num; ++i) {
-        numbers[i]= (short)el.at(i)-'0';
+        short int number = (short int)strtoul(el.at(i), NULL, 0);
+        numbers[i] = number;
     }
     return numbers;
 }
