@@ -15,11 +15,9 @@
 #include <stdlib.h>
 
 using namespace std;
-const int numToken = 28;
+const int numToken = 55;
 typedef short int tArray[numToken];
-
-ifstream archivo;
-ofstream file;
+int maxNumber = 0;
 
 string toStr(int n) {
     switch (n) {
@@ -46,6 +44,15 @@ string toStr(int n) {
         default:
             return "ERROR";
     }
+}
+
+int maxNumTokens(int maxNumber)
+{
+	int sum = 0;
+	for (int i = 1; i <= maxNumber+1; i++)
+		sum += i;
+
+	return sum;
 }
 
 // Token
@@ -91,12 +98,10 @@ void deleteToken (tArray tokenN1, tArray tokenN2, short int& numPlayerToken, sho
     numPlayerToken--;
 }
 
-void drawTokens (tArray pool1, tArray pool2, short int cont, short int& tokenN1, short int& tokenN2) {
-    for (int i = 0; i < 1; i++) {
-        tokenN1 = pool1[cont-1];
-        tokenN2 = pool2[cont-1];
-        cont--;
-    }
+void drawTokens (tArray pool1, tArray pool2, short int& cont, short int& tokenN1, short int& tokenN2) {
+	tokenN1 = pool1[cont-1];
+	tokenN2 = pool2[cont-1];
+	cont--;
 }
 
 // Tablero
@@ -112,9 +117,9 @@ void showBoard(tArray tokenN1, tArray tokenN2, string board, int numCounter, int
 
 // Menú
 int showMenu() {
-    int chooseOption = 0;
+    char chooseOption = '0';
     
-    while (chooseOption < 1 || chooseOption > 4) {
+    while (chooseOption < '1' || chooseOption > '4') {
         cout << " -------------------- " << endl;
         cout << "|  MENÚ DE OPCIONES  |" << endl;
         cout << " -------------------- " << endl;
@@ -127,7 +132,7 @@ int showMenu() {
         cin >> chooseOption;
     }
     
-    return chooseOption;
+    return chooseOption-0x30;
 }
 
 // aleat
@@ -146,7 +151,7 @@ short int chooseToken(tArray tokenN1, tArray tokenN2, int numPlayerToken) {
         cout << "Elije ficha: ";
         cin >> chooseToken;
     }
-    return chooseToken;
+    return chooseToken-1;
 }
 
 short int chooseMax() {
@@ -181,9 +186,9 @@ bool openFile() {
     return option == 'S';
 }
 
-void generatePool(tArray pool1, tArray pool2, int max) {
+void generatePool(tArray pool1, tArray pool2, int maxNumber) {
     int k = 0;
-    for ( int i = 0; i <= max; i++ ) {
+    for ( int i = 0; i <= maxNumber; i++ ) {
         for ( int j = 0; j <= i; j++ ) {
             pool1[ k ] = i;
             pool2[ k ] = j;
@@ -195,7 +200,7 @@ void generatePool(tArray pool1, tArray pool2, int max) {
 void disorderPool(tArray pool1, tArray pool2) {
     int idx;
     short int tmp1, tmp2;
-        for (int i = numToken - 1; i >= 0; i--) {
+        for (int i = maxNumTokens(maxNumber) - 1; i >= 0; i--) {
             idx = rand() % (i + 1);
             if (i != idx) {
             tmp1 = pool1[i];
@@ -208,9 +213,9 @@ void disorderPool(tArray pool1, tArray pool2) {
     }
 }
 
-string convertArrayToString(tArray xs) {
+string convertArrayToString(tArray xs, short int maxNumber) {
     string returnstring;
-    for (int temp = 0; temp < numToken; temp++)
+    for (int temp = 0; temp < maxNumber; temp++)
         returnstring += toStr(xs[temp]);
     return returnstring;
 }
@@ -221,8 +226,14 @@ void convertStringToArray(string el, int num, tArray arr) {
     }
 }
 
-void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
+bool collectData(tArray pool1, tArray pool2, short int& numPlayerToken, string& board, tArray tokenN1, tArray tokenN2, short int& numPoolToken, int& counter, int& stolen) {
+	ifstream archivo;
     archivo.open("domino_save.txt", ios::in);
+	if (!archivo.is_open())
+	{
+		cout << "¡No se ha podido abrir el archivo!" << endl;
+		return false;
+	}
     string _numPoolToken, _numPlayerToken, _pool1, _pool2, _tokenN1, _tokenN2;
 
     archivo >> board;
@@ -234,7 +245,7 @@ void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, 
     archivo >> _tokenN2;
     archivo >> counter;
     archivo >> stolen;
-    archivo >> max;
+    archivo >> maxNumber;
 
     numPlayerToken = stoi(_numPlayerToken);
     numPoolToken = stoi(_numPoolToken);
@@ -244,21 +255,24 @@ void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, 
     convertStringToArray(_tokenN2, numPoolToken, tokenN2);
 
     archivo.close();
+
+	return true;
 }
 
-void saveCollectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
+void saveCollectData(tArray pool1, tArray pool2, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
+	ofstream file;
     file.open("domino_save.txt", ios::out);
     if (file.is_open()) {
     file << board << '\n'
         << numPlayerToken << '\n'
         << numPoolToken << '\n'
-        << convertArrayToString(pool1) << '\n'
-        << convertArrayToString(pool2) << '\n'
-        << convertArrayToString(tokenN1) << '\n'
-        << convertArrayToString(tokenN2) << '\n'
+        << convertArrayToString(pool1, maxNumTokens(maxNumber)) << '\n'
+        << convertArrayToString(pool2, maxNumTokens(maxNumber)) << '\n'
+        << convertArrayToString(tokenN1, numPlayerToken) << '\n'
+        << convertArrayToString(tokenN2, numPlayerToken) << '\n'
         << counter << '\n'
         << stolen << '\n'
-        << max << '\n';
+        << maxNumber << '\n';
 
         file.close();
 
@@ -271,25 +285,22 @@ void saveCollectData(tArray pool1, tArray pool2, int max, short int numPlayerTok
 bool canDrawToken(string board, tArray tokenN1, tArray tokenN2, int numPlayerToken) {
     bool canPutLeftBool = true;
     bool canPutRightBool = true;
-    bool boolToken = (canPutLeftBool && canPutRightBool);
 
-    for (int i = 0; i <= numPlayerToken; i++) {
-        canPutLeftBool = canPutLeft(board, tokenN1[i], tokenN2[i]) && canPutLeft(board, tokenN2[i], tokenN1[i]);
-        canPutRightBool = canPutRight(board, tokenN1[i], tokenN2[i]) && canPutRight(board, tokenN2[i], tokenN1[i]);
-
-        if (!boolToken) {
-            return boolToken;
+    for (int i = 0; i < numPlayerToken; i++) {
+        canPutLeftBool = canPutLeft(board, tokenN1[i], tokenN2[i]) || canPutLeft(board, tokenN2[i], tokenN1[i]);
+        canPutRightBool = canPutRight(board, tokenN1[i], tokenN2[i]) || canPutRight(board, tokenN2[i], tokenN1[i]);
+        if (canPutLeftBool || canPutRightBool) {
+            return false;
         }
     }
-    return !boolToken;
+    return true;
 }
 
 int main(int argc, const char * argv[]) {
     int counter = 0;
     int stolen = 0;
-    int max = 0;
     short int numPlayerToken = 0;
-    int numPoolToken = 0;
+    short int numPoolToken = 0;
     tArray tokenN1;
     tArray tokenN2;
     string board;
@@ -299,50 +310,28 @@ int main(int argc, const char * argv[]) {
     
     srand(time(NULL));
 
-    
-    if (openFile()) {
-        if (archivo.is_open()) {
-                collectData(pool1, pool2, max, numPlayerToken, board, tokenN1, tokenN2, numPoolToken, counter, stolen);
-        } else {
-            cout << "¡No se ha podido abrir el archivo!" << endl;
-            
-            max = chooseMax();
-        
-            generatePool(pool1, pool2, max);
-            disorderPool(pool1, pool2);
-            numPlayerToken = 7;
-            numPoolToken = numToken;
 
-            for (int i = 0; i < numPlayerToken; i++) {
-                tokenN1[i] = pool1[numPoolToken-1];
-                tokenN2[i] = pool2[numPoolToken-1];
-                numPoolToken--;
-            }
+	if (!openFile() || !collectData(pool1, pool2, numPlayerToken, board, tokenN1, tokenN2, numPoolToken, counter, stolen)) {
 
-            board = tokenToStr(pool1[numPoolToken-1],pool2[numPoolToken-1]);
-            numPoolToken--;
-        }
-    } else {
-        
-        max = chooseMax();
-        
-        generatePool(pool1, pool2, max);
-        disorderPool(pool1, pool2);
-        numPlayerToken = 7;
-        numPoolToken = numToken;
+		maxNumber = chooseMax();
 
-        for (int i = 0; i < numPlayerToken; i++) {
-            tokenN1[i] = pool1[numPoolToken-1];
-            tokenN2[i] = pool2[numPoolToken-1];
-            numPoolToken--;
-        }
+		generatePool(pool1, pool2, maxNumber);
+		disorderPool(pool1, pool2);
+		numPlayerToken = 7;
+		numPoolToken = maxNumTokens(maxNumber);
 
-        board = tokenToStr(pool1[numPoolToken-1],pool2[numPoolToken-1]);
-        numPoolToken--;
-    }
+		for (int i = 0; i < numPlayerToken; i++) {
+			tokenN1[i] = pool1[numPoolToken-1];
+			tokenN2[i] = pool2[numPoolToken-1];
+			numPoolToken--;
+		}
+
+		board = tokenToStr(pool1[numPoolToken-1],pool2[numPoolToken-1]);
+		numPoolToken--;
+	}
     
     for (int option = 0; option != 4;) {
-        showBoard(pool1, pool2, board, counter, stolen, numPlayerToken);
+        showBoard(tokenN1, tokenN2, board, counter, stolen, numPlayerToken);
         option = showMenu();
         short int chosen;
 
@@ -378,17 +367,27 @@ int main(int argc, const char * argv[]) {
             case 3:
                 if (canDrawToken(board, tokenN1, tokenN2, numPlayerToken)) {
                     numPlayerToken = numPlayerToken + 1;
-                    drawTokens(pool1, pool2, numPoolToken, tokenN1[numPlayerToken], tokenN2[numPlayerToken]);
+                    drawTokens(pool1, pool2, numPoolToken, tokenN1[numPlayerToken-1], tokenN2[numPlayerToken-1]);
                     stolen++;
                 } else {
                     cout << ">> Tienes fichas que puedes utilizar! :-) <<" << endl;
                 }
                 break;
         }
+        if (counter == maxNumTokens(maxNumber)-1)
+        {
+            cout << "Enhorabuena" << endl;
+            break;
+        }
+        else if (counter + numPlayerToken == maxNumTokens(maxNumber)-1)
+        {
+            cout << "Has perdido" << endl;
+			break;
+		}
     }
     
     if (chooseSave()) {
-        saveCollectData(pool1, pool2, max, numPlayerToken, board, tokenN1, tokenN2, numPoolToken, counter, stolen);
+        saveCollectData(pool1, pool2, numPlayerToken, board, tokenN1, tokenN2, numPoolToken, counter, stolen);
     }
     return 0;
 }
