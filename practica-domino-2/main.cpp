@@ -215,13 +215,10 @@ string convertArrayToString(tArray xs) {
     return returnstring;
 }
 
- tArray convertStringToArray(string el, int num) {
-    tArray numbers;
+void convertStringToArray(string el, int num, tArray arr) {
     for (int i = 0; i < num; ++i) {
-        short int number = (short int)strtoul(el.at(i), NULL, 0);
-        numbers[i] = (short int)strtoul(el.at(i), NULL, 0);
+        arr[i] = el[i] - '0';
     }
-    return numbers;
 }
 
 void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, string board, tArray tokenN1, tArray tokenN2, int numPoolToken, int counter, int stolen) {
@@ -241,10 +238,10 @@ void collectData(tArray pool1, tArray pool2, int max, short int numPlayerToken, 
 
     numPlayerToken = stoi(_numPlayerToken);
     numPoolToken = stoi(_numPoolToken);
-    pool1 = convertStringToArray(_pool1, numPoolToken);
-    pool2 = convertStringToArray(_pool2, numPoolToken);
-    tokenN1 = convertStringToArray(_tokenN1, numPoolToken);
-    tokenN2 = convertStringToArray(_tokenN2, numPoolToken);
+    convertStringToArray(_pool1, numPoolToken, pool1);
+    convertStringToArray(_pool2, numPoolToken, pool2);
+    convertStringToArray(_tokenN1, numPoolToken, tokenN1);
+    convertStringToArray(_tokenN2, numPoolToken, tokenN2);
 
     archivo.close();
 }
